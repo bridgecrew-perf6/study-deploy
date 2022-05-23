@@ -3,6 +3,10 @@ name: logging-system
 on:
   workflow_dispatch: 
 
+env:
+  S3_BUCKET_NAME: logging-system-deploy220524
+  PROJECT_NAME: study-deploy
+
 permissions:
   contents: read
 
