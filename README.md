@@ -83,3 +83,18 @@ jobs:
 - Actions에서 배포를 수동 실행해보고, S3를 확인하여 빌드한 jar 파일의 압축본이 제대로 저장되어있는 지 확인한다.
 
 ---
+
+## AWS CodeDeploy를 통한 배포
+
+- 어플리케이션 최상단 경로에, `AppSpec.yml` 파일을 추가
+  - `AppSpec.yml` : 배포에 관한 모든 절차를 적어둔 명세서
+- `GitHub Action`이 `AWS CodeDeploy`에 프로젝트의 특정 버전을 배포해달라고 요청
+- `CodeDeploy`는 배포를 진행할 EC2 인스턴스에 설치되어 있는 `CodeDeploy Agent`들에게 요청받은 버전을 배포 해달라고 요청.
+- `Agent`들은 저장소에서 프로젝트 전체를 서버에 내려받고, AppSpec.yml이 명시한 절차대로 배포를 진행
+- Agent는 배포를 진행하고, CodeDeploy에게 성공/실패 등의 결과를 전달
+
+---
+
+## EC2 인스턴스 셋팅
+- SSH는 최소한의 고정 ip에서만(집 PC 정도) 접근할 수 있도록 허용
+- HTTP,HTTPS 요청에 응할 수 있도록 인바운드 규칙에 80번, 443번 포트 개방
