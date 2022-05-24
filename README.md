@@ -98,3 +98,56 @@ jobs:
 ## EC2 인스턴스 셋팅
 - SSH는 최소한의 고정 ip에서만(집 PC 정도) 접근할 수 있도록 허용
 - HTTP,HTTPS 요청에 응할 수 있도록 인바운드 규칙에 80번, 443번 포트 개방
+- **SSH 접속을 위한 pem키 절대 잃어버리지 말기**
+
+## SSH를 통해 EC2 접속
+```config
+Host : (서비스 명 입력)
+    HostName (호스트 ip입력)
+    User ec2-user
+    IdentityFile ~/.ssh/(키 이름.pem)
+```
+- 동명의 경로에 config 파일을 위와 같이 생성 후 chmod 700 부여
+  - Host : 앞으로 ssh 접속할 때 사용할 이름. 또는 서비스명
+    - HostName : 호스트 ip
+    - User : ec2 사용자명. 여기서는 amazon linux2에서 설정된 ec2-user
+    - IdentifyFile : 접속할 키 경로
+- `~/.ssh/` 경로에 pem 파일을 두기
+  > ssh (서비스 명 입력)
+
+## EC2 측의 초기 설정
+```
+# 설치할 수 있는 jdk 확인
+sudo yum list java*
+
+# 자바 설치
+sudo yum install -y java-11-amazon-corretto.x86_64
+
+sudo yum update
+sudo yum install ruby
+sudo yum install wget
+
+cd /home/ec2-user
+wget https://aws-codedeploy-ap-northeast-2.s3.ap-northeast-2.amazonaws.com/latest/install
+
+chmod +x ./install
+
+sudo ./install auto
+sudo service codedeploy-agent status
+```
+- 자바 설치
+- 패키지 매니저 업데이트, ruby 설치, ...
+- 서울 리전에 있는 CodeDeploy 리소스 파일 다운로드
+- 설치 파일에 실행 권한 부여
+- 설치 진행 및 Agent 상태 확인
+
+## EC2에 IAM Role 부여
+- EC2 서비스에 대해, CodeDeploy, S3 FullAccess할 수 있는 역할 생성
+  - CodeDeploy-S3-Role이라고 칭하겠다.
+- EC2 인스턴스에 CodeDeploy-S3 Role을 부여한다.
+
+## CodeDeploy 애플리케이션 생성 및 Role 부여
+- CodeDeploy 역할을 생성
+- CodeDeploy 애플리케이션 생성
+  - 배포그룹 생성, EC2 연동
+
